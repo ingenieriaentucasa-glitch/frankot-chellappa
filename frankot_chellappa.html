@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Frankot-Chellappa Algorithm Implementation</title>
+<style>
+body {
+    font-family: Arial;
+    margin: 40px;
+    line-height: 1.6;
+}
+code {
+    background: #f4f4f4;
+    padding: 10px;
+    display: block;
+    white-space: pre-wrap;
+}
+h1, h2 {
+    color: #2c3e50;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Frankot–Chellappa Algorithm (MATLAB Implementation)</h1>
+
+<p>
+This page documents a MATLAB implementation of the Frankot–Chellappa algorithm,
+originally proposed in:
+</p>
+
+<p>
+Frankot, R. T., & Chellappa, R. (1988). 
+"A Method for Enforcing Integrability in Shape from Shading Algorithms".
+IEEE Transactions on Pattern Analysis and Machine Intelligence.
+</p>
+
+<h2>1. Mathematical Background</h2>
+
+<p>
+Given a gradient field (px, py), the goal is to recover a surface φ(x,y).
+The method enforces integrability in the Fourier domain using:
+</p>
+
+<p>
+Φ(ωx,ωy) = (-iωx Px - iωy Py) / (ωx² + ωy²)
+</p>
+
+<h2>2. MATLAB Implementation</h2>
+
+<code>
+function phi = frankot_chellappa(px,py)
+
+[M,N] = size(px);
+
+[wx,wy] = meshgrid( ...
+    (-N/2:N/2-1)*(2*pi/N), ...
+    (-M/2:M/2-1)*(2*pi/M));
+
+Px = fftshift(fft2(px));
+Py = fftshift(fft2(py));
+
+den = wx.^2 + wy.^2;
+den(den==0) = 1;
+
+Phi = (-1i*wx.*Px - 1i*wy.*Py)./den;
+
+Phi(den==0) = 0;
+
+phi = real(ifft2(ifftshift(Phi)));
+
+end
+</code>
+
+<h2>3. Description</h2>
+
+<ul>
+<li>Transforms gradients into Fourier domain</li>
+<li>Applies integrability constraint</li>
+<li>Reconstructs surface via inverse FFT</li>
+</ul>
+
+<h2>4. Notes</h2>
+
+<p>
+This implementation is a direct discretization of the original formulation
+proposed by Frankot and Chellappa (1988).
+</p>
+
+</body>
+</html> 
